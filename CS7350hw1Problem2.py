@@ -29,8 +29,9 @@ class SLinkedList:
                 current = current.nextval
             newNode.nextval = current.nextval
             current.nextval = newNode
-list1 = SLinkedList()
+
 def addRandomNumbers(n): 
+   list1 = SLinkedList()
     for i in range(1,n+1):
         newValue = random.randint(1,n)
         newNode = Node(newValue)
@@ -53,52 +54,9 @@ plt.ylabel('Run Time (seconds)')
 plt.title('Run Time vs Number of Items')
 print(runTimeStorage)
 
-# def newHead(newValue, list):
-#     #function to insert a new node at the beginning of the linked list
-#     newNode = Node(newValue)
-#     newNode.nextval = self.head
-# def findLocationToInsert(newValue, list):
-    
-#     checkval = list.headval
-#     if newValue < checkval.dataval: #special case if the new value is less than the head value
-#         newHead(newValue)
-#     while checkval is not None:
-#         if newValue <= listPosition.dataval:
-#             return listPosition
-#         else:
-#             listPositionOld = listPosition
-#             listPosition = listPosition.nextval
-#             # If it is at the very end of the list 
-#             if listPosition == None:
-#                 return listPositionOld
-
-
-# def addValues(n, startNode, list1):
-#     valueStorage = [] # Storage of random numbers in order of generation
-#     for i in range(1,n):
-#         value = random.randint(1,n)
-#         valueStorage.append(value)
-
 def newValuePositionInList(newValue, list):
     currentValue = list.headval
     while currentValue.nextval != None and currentValue.nextval.dataval < newValue:
         currentValue = currentValue.nextval #  Iterate through the loop until we find that the currentValue in the list is greater than or equal to newValue     
     return currentValue
-
-
-# def addNewValue(n, list):
-#     list.headval = Node(random.randint(1,n))
-#     for i in range(1,n):
-#         newValue = random.randint(1,n)
-#         newNode = Node(newValue)
-        
-#         if newValue < list.headval.dataval: # special case if the new value is less than the head value
-#             # print((newValue, list.headval.dataval))
-#             list.listprint()
-#             newNode.next = list.headval
-#             list.headval = newNode
-#         else:
-#             previousValue = newValuePositionInList(newValue, list)
-#             newNode.nextval = previousValue.nextval
-#             previousValue.nextval = newNode
 
