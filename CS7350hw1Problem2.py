@@ -31,7 +31,7 @@ class SLinkedList:
             current.nextval = newNode
 
 def addRandomNumbers(n): 
-   list1 = SLinkedList()
+    list1 = SLinkedList()
     for i in range(1,n+1):
         newValue = random.randint(1,n)
         newNode = Node(newValue)
