@@ -4,7 +4,7 @@ Created on Tue Apr 19 18:01:32 2022
 
 @author: Max
 """
-from numpy import number
+import numpy as np
 
 
 class SLVO:
@@ -22,7 +22,7 @@ class SLVO:
             edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
         edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
         edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] )-1 :-1])
-        print(edgesDict)
+        # print(edgesDict)
         return edgesDict, edgeQuantityDict, numberVertices
 
     def minValueFromDict(self, d):
@@ -55,6 +55,64 @@ class SLVO:
             
         return keyOrder, finalColor
         
+class SmallestOriginalDegreeLast:
+    def __init__(self, adjacencyList):
+        self.List = adjacencyList
+   
+    def adjacencyListStringToDictAndArray(self): 
+        listAsList = self.List.split('\t')
+        numberVertices = int(listAsList[0])
+        startPoints = listAsList[1 : numberVertices+1]
+        edges = []
+        edgeQuantity = []
+        edgesDict = {}
+        edgeQuantityDict = {}
+        for i in range(numberVertices -1) : 
+            edges.append(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
+            edgeQuantity.append(len(listAsList[int(startPoints[i]) : int(startPoints[i+1])]))
+            edgesDict[i] = listAsList[int(startPoints[i]) : int(startPoints[i+1])]
+            edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
+        edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
+        edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] )-1 :-1])
+        # print(edgesDict)
+        return edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity
+    
+    def dictionaryKeysToSortedArray(self, d):
+        array = []
+        for k in sorted(d, key=lambda k: len(d[k]), reverse=True):
+            array.append(k)
+        return array
+
+class RandomOrder:
+    def __init__(self, adjacencyList):
+        self.List = adjacencyList
+   
+    def adjacencyListStringToDictAndArray(self): 
+        listAsList = self.List.split('\t')
+        numberVertices = int(listAsList[0])
+        startPoints = listAsList[1 : numberVertices+1]
+        edges = []
+        edgeQuantity = []
+        edgesDict = {}
+        edgeQuantityDict = {}
+        for i in range(numberVertices -1) : 
+            edges.append(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
+            edgeQuantity.append(len(listAsList[int(startPoints[i]) : int(startPoints[i+1])]))
+            edgesDict[i] = listAsList[int(startPoints[i]) : int(startPoints[i+1])]
+            edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
+        edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
+        edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] )-1 :-1])
+        return edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity
+    
+    def takeKeysFromDictAndPutInArrayRandomly(self, dictionary):
+        array = [-1] # need to insert a -1 into it so that randint doesn't get irritated that it needs to pick a number between 0 and 0 
+        for k in dictionary:
+            array.insert(np.random.randint(0, len(array)), k)
+        array.remove(-1)
+        return array
+    
+    
+    
 if __name__ == "__main__": 
 
     testCase1 = '5	6	9	11	15	19	3	2	4	3	2	0	1	3	4	0	1	4	2	3	0	2'
@@ -65,9 +123,14 @@ if __name__ == "__main__":
     
     slvo = SLVO(testCase1)
     keyorder, finalcolor = slvo.organizeOutput()
-    print(keyorder)
-    print(finalcolor)
     
+    smallestOriginalDegreeLast = SmallestOriginalDegreeLast(testCase1)
+    edgesDict, edgesQuantityDict, numberVertices, edges, edgeQuantity = smallestOriginalDegreeLast.adjacencyListStringToDictAndArray()
+    sortedEdges = smallestOriginalDegreeLast.dictionaryKeysToSortedArray(edgesDict)
+    
+    randomOrder = RandomOrder(testCase1)
+    edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity = randomOrder.adjacencyListStringToDictAndArray()
+    print(randomOrder.takeKeysFromDictAndPutInArrayRandomly(edgesDict))
     # print(edges)
     # print(edgeQuantity)
     # print(edges)
