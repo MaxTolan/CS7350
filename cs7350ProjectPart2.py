@@ -5,31 +5,57 @@ Created on Tue Apr 19 18:01:32 2022
 @author: Max
 """
 import numpy as np
+def find_missing(lst): # Taken from https://www.geeksforgeeks.org/python-find-missing-numbers-in-a-sorted-list-range/
+    # Input is a sorted list of integers, the output is any integers missing between the max and min of the list 
+    return [x for x in range(lst[0], lst[-1]+1) if x not in lst]
 
+def coloringv2(edgesDict, numberVertices, keyOrder):
+    result = [-1] * numberVertices
+    result[0] = 0 # First item immediately gets color 0
+    currentColors = {keyOrder[0]:0}
+    for i in range(1, numberVertices):
+        forbiddenColors = [] #Set up blank for each vertex
+        currentEdges = edgesDict[keyOrder[i]]
+        for k in currentEdges:
+            forbiddenColors.append(currentColors.get(int(k), -1))
+        if not forbiddenColors: # If forbidden colors is empty, then there are no conflicts, so give it 0
+            result[i] = 0
+            currentColors[keyOrder[i]] = 0
+        elif (all(element == -1 for element in forbiddenColors)): # If forbidden colors all equal -1, then give it 0
+            result[i] = 0
+            currentColors[keyOrder[i]] = 0
+        else:
+            forbiddenColors.sort()
+            availableColors = find_missing(forbiddenColors)
+            if not availableColors: # If the list has no available colors, then give it the new max
+                result[i] = forbiddenColors[-1] +1
+                currentColors[keyOrder[i]] = forbiddenColors[-1] +1
+            else:
+                result[i] = availableColors[0]
+                currentColors[keyOrder[i]] = availableColors[0]
+            
+    return currentColors
+def adjacencyListStringToDictAndArray(list): 
+    listAsList = list.split('\t')
+    numberVertices = int(listAsList[0])
+    startPoints = listAsList[1 : numberVertices+1]
+    edges = []
+    edgeQuantity = []
+    edgesDict = {}
+    edgeQuantityDict = {}
+    for i in range(numberVertices -1) : 
+        edges.append(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
+        edgeQuantity.append(len(listAsList[int(startPoints[i]) : int(startPoints[i+1])]))
+        edgesDict[i] = listAsList[int(startPoints[i]) : int(startPoints[i+1])]
+        edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
+    edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] ) :]
+            # edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
+    edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] ) :])
+    return edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity
 # TODO: Clean up code so that one portion handles the ordering, while the coloringv2 function is its own thing
 class SLVO:
     def __init__(self, adjacencyList):
         self.List = adjacencyList
-   
-    def adjacencyListStringToDictAndArray(self): 
-        listAsList = self.List.split('\t')
-        numberVertices = int(listAsList[0])
-        startPoints = listAsList[1 : numberVertices+1]
-        edges = []
-        edgeQuantity = []
-        edgesDict = {}
-        edgeQuantityDict = {}
-        for i in range(numberVertices -1) : 
-            edges.append(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-            edgeQuantity.append(len(listAsList[int(startPoints[i]) : int(startPoints[i+1])]))
-            edgesDict[i] = listAsList[int(startPoints[i]) : int(startPoints[i+1])]
-            edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-        startOfLast = startPoints[-1]
-        lastItem = listAsList[-1]
-        edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] ) :]
-                # edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
-        edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] ) :])
-        return edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity
 
     def minValueFromDict(self, d):
         minValue = min(d.values())
@@ -65,71 +91,9 @@ class SLVO:
             
         return keyOrderValues
     
-    def edgeListColorOrdering(self, edgesDict):
-        keyOrderValues = self.keyOrder()
-        keyOrderValues.reverse() #Reverse it because the first one colored is the item in line 0
-        edgeListInColorOrdering = []
-        count = 0
-        indexToKeyValueDict = {}
-        for i in keyOrderValues:
-            edgeListInColorOrdering.append(edgesDict[i])
-            indexToKeyValueDict[count] = i
-            count += 1
-        return edgeListInColorOrdering, indexToKeyValueDict
-    def find_missing(self, lst): # Taken from https://www.geeksforgeeks.org/python-find-missing-numbers-in-a-sorted-list-range/
-        return [x for x in range(lst[0], lst[-1]+1) 
-                               if x not in lst]
-    
-    def coloringv2(self, edgesDict, numberVertices, keyOrder):
-        result = [-1] * numberVertices
-        result[0] = 0 # First item immediately gets color 0
-        currentColors = {keyOrder[0]:0}
-        for i in range(1, numberVertices):
-            forbiddenColors = [] #Set up blank for each vertex
-            currentEdges = edgesDict[keyOrder[i]]
-            for k in currentEdges:
-                forbiddenColors.append(currentColors.get(int(k), -1))
-            if not forbiddenColors: # If forbidden colors is empty, then there are no conflicts, so give it 0
-                result[i] = 0
-                currentColors[keyOrder[i]] = 0
-            elif (all(element == -1 for element in forbiddenColors)): # If forbidden colors all equal -1, then give it 0
-                result[i] = 0
-                currentColors[keyOrder[i]] = 0
-            else:
-                forbiddenColors.sort()
-                availableColors = self.find_missing(forbiddenColors)
-                if not availableColors: # If the list has no available numbers, then give it the new max
-                    result[i] = forbiddenColors[-1] +1
-                    currentColors[keyOrder[i]] = forbiddenColors[-1] +1
-                else:
-                    result[i] = availableColors[0]
-                    currentColors[keyOrder[i]] = availableColors[0]
-                
-        print(currentColors)
-        
-    
 class SmallestOriginalDegreeLast:
     def __init__(self, adjacencyList):
         self.List = adjacencyList
-   
-    def adjacencyListStringToDictAndArray(self): 
-        listAsList = self.List.split('\t')
-        numberVertices = int(listAsList[0])
-        startPoints = listAsList[1 : numberVertices+1]
-        edges = []
-        edgeQuantity = []
-        edgesDict = {}
-        edgeQuantityDict = {}
-        for i in range(numberVertices -1) : 
-            edges.append(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-            edgeQuantity.append(len(listAsList[int(startPoints[i]) : int(startPoints[i+1])]))
-            edgesDict[i] = listAsList[int(startPoints[i]) : int(startPoints[i+1])]
-            edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-        edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] ) :]
-                # edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
-        edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] ) :])
-        # print(edgesDict)
-        return edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity
     
     def dictionaryKeysToSortedArray(self, d):
         array = []
@@ -140,24 +104,6 @@ class SmallestOriginalDegreeLast:
 class RandomOrder:
     def __init__(self, adjacencyList):
         self.List = adjacencyList
-   
-    def adjacencyListStringToDictAndArray(self): 
-        listAsList = self.List.split('\t')
-        numberVertices = int(listAsList[0])
-        startPoints = listAsList[1 : numberVertices+1]
-        edges = []
-        edgeQuantity = []
-        edgesDict = {}
-        edgeQuantityDict = {}
-        for i in range(numberVertices -1) : 
-            edges.append(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-            edgeQuantity.append(len(listAsList[int(startPoints[i]) : int(startPoints[i+1])]))
-            edgesDict[i] = listAsList[int(startPoints[i]) : int(startPoints[i+1])]
-            edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-        edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] ) :]
-                # edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
-        edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] ) :])
-        return edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity
     
     def takeKeysFromDictAndPutInArrayRandomly(self, dictionary):
         array = [-1] # need to insert a -1 into it so that randint doesn't get irritated that it needs to pick a number between 0 and 0 
@@ -170,21 +116,6 @@ class BiggestLastVertexOrdering:
     def __init__(self, adjacencyList):
         self.List = adjacencyList
    
-    def adjacencyListStringToDict(self): 
-        listAsList = self.List.split('\t')
-        numberVertices = int(listAsList[0])
-        startPoints = listAsList[1 : numberVertices+1]
-        edgesDict = {}
-        edgeQuantityDict = {}
-        for i in range(numberVertices -1) : 
-            edgesDict[i] = listAsList[int(startPoints[i]) : int(startPoints[i+1])]
-            edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-        edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] ) :]
-                # edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
-        edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] ) :])
-        # print(edgesDict)
-        return edgesDict, edgeQuantityDict, numberVertices
-
     def maxValueFromDict(self, d):
         maxValue = max(d.values())
         maxList = [key for key, value in d.items() if value == maxValue]
@@ -217,31 +148,6 @@ class BiggestLastVertexOrdering:
 class BiggestOriginalDegreeLast:
     def __init__(self, adjacencyList):
         self.List = adjacencyList
-   
-    def adjacencyListStringToDictAndArray(self): 
-        listAsList = self.List.split('\t')
-        numberVertices = int(listAsList[0])
-        startPoints = listAsList[1 : numberVertices+1]
-        edges = []
-        edgeQuantity = []
-        edgesDict = {}
-        edgeQuantityDict = {}
-        for i in range(numberVertices -1) : 
-            edges.append(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-            edgeQuantity.append(len(listAsList[int(startPoints[i]) : int(startPoints[i+1])]))
-            edgesDict[i] = listAsList[int(startPoints[i]) : int(startPoints[i+1])]
-            edgeQuantityDict[i] = len(listAsList[int(startPoints[i]) : int(startPoints[i+1])])
-        edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] ) :]
-                # edgesDict[numberVertices-1] = listAsList[ int(startPoints[-1] )-1 :-1]
-        edgeQuantityDict[numberVertices -1] = len(listAsList[ int(startPoints[-1] ) :])
-        # print(edgesDict)
-        return edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity
-    
-    def dictionaryKeysToSortedArray(self, d):
-        array = []
-        for k in sorted(d, key=lambda k: len(d[k]), reverse=False):
-            array.append(k)
-        return array
 
 class VerticesOrganizedAlphabetically:
     def __init__(self, adjacencyList):
@@ -332,28 +238,28 @@ if __name__ == "__main__":
     testCase4 = '5	6	8	10	12	14	4	1	2	0	3	1	4	2	0	3'
     testCase5 = '5	6	10	14	18	22	4	3	2	1	4	3	2	0	4	3	1	0	4	2	1	0	3	2	1	0'
     testCase6 = '4	5	8	11	14	3	2	1	3	2	0	3	1	0	2	1	0'
-    slvo = SLVO(testCase6)
-    edgesDictSLVO, edgeQuantityDictSLVO, numberVerticesSLVO, edgesSLVO, edgeQuantitySLVO = slvo.adjacencyListStringToDictAndArray()
+
+    currentTestCase = testCase6
+    slvo = SLVO(currentTestCase)
+    edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity = adjacencyListStringToDictAndArray()
    
-    print(edgesDictSLVO)
+    print(edgesDict)
     keyorderSLVO = slvo.keyOrder()
     print(keyorderSLVO)
-    edgeListInColorOrderingSLVO, indexToKeyValueDict = slvo.edgeListColorOrdering(edgesDictSLVO)
-    # slvo.greedycoloring(edgeListInColorOrderingSLVO, numberVerticesSLVO, indexToKeyValueDict)
-    slvo.coloringv2(edgesDictSLVO, numberVerticesSLVO, keyorderSLVO)
+    slvoColors = coloringv2(edgesDict, numberVertices, keyorderSLVO)
+    print(slvoColors)
     smallestOriginalDegreeLast = SmallestOriginalDegreeLast(testCase1)
-    edgesDictSmallestOriginal, edgesQuantityDictSmallestOriginal, numberVerticesSmallestOriginal, edgesSmallestOriginal, edgeQuantitySmallestOriginal = smallestOriginalDegreeLast.adjacencyListStringToDictAndArray()
-    sortedEdges = smallestOriginalDegreeLast.dictionaryKeysToSortedArray(edgesDictSmallestOriginal)
+
+    
+    sortedEdges = smallestOriginalDegreeLast.dictionaryKeysToSortedArray(edgesDict)
     # print(edgesSmallestOriginal)
-    randomOrder = RandomOrder(testCase1)
-    edgesDictRandom, edgeQuantityDictRandom, numberVerticesRandom, edgesRandom, edgeQuantityRandom = randomOrder.adjacencyListStringToDictAndArray()
+    randomOrder = RandomOrder(currentTestCase)
     # print(randomOrder.takeKeysFromDictAndPutInArrayRandomly(edgesDictRandom))
 
-    biggestLastVertexOrder = BiggestLastVertexOrdering(testCase1)
+    biggestLastVertexOrder = BiggestLastVertexOrdering(currentTestCase)
     keyOrderBLVO, finalcolor = biggestLastVertexOrder.organizeOutput()
 
-    verticesOrganizedAlphabetically = VerticesOrganizedAlphabetically(testCase1)
-    edgesDict, edgeQuantityDict, numberVertices, edges, edgeQuantity = verticesOrganizedAlphabetically.adjacencyListStringToDictAndArray()
+    verticesOrganizedAlphabetically = VerticesOrganizedAlphabetically(currentTestCase)
     englishDict = verticesOrganizedAlphabetically.dictKeyNumberToEnglish(edgesDict)
     sortedEnglish = verticesOrganizedAlphabetically.dictionaryKeysToSortedArray(englishDict)
     dictionaryEnglishToInteger = verticesOrganizedAlphabetically.dictEnglishToIntegers(numberVertices)
