@@ -4,6 +4,7 @@ Created on Fri Mar 11 14:20:03 2022
 
 @author: Max
 """
+from operator import index
 import time
 import matplotlib.pyplot as plt #Can be reimplemented by uncommenting lines 152-160
 import numpy as np
@@ -155,7 +156,7 @@ class UniformRandomGraph:
             self.add_edge(source, dest)
             existingEdges[source] += [dest]#Add source and destination to existing edges
             existingEdges[dest] += [source]
-        print(existingEdges)
+        # print(existingEdges)
         return existingEdges
     
     def print_agraph(self): # Need to modify this to fit the desired format
@@ -209,7 +210,7 @@ class SkewedRandomGraph:
             self.add_edge(source, dest)
             existingEdges[source] += [dest]#Add source and destination to existing edges
             existingEdges[dest] += [source]
-        print(existingEdges)
+        # print(existingEdges)
         return existingEdges
                 
     def printSkewedDistribution(self):
@@ -280,7 +281,7 @@ class GaussianDistributionRandomGraph:
             self.add_edge(source, dest)
             existingEdges[source] += [dest]#Add source and destination to existing edges
             existingEdges[dest] += [source]
-        print(existingEdges)
+        # print(existingEdges)
         return existingEdges
     
     def print_agraph(self): # Need to modify this to fit the desired format
@@ -305,19 +306,79 @@ class GaussianDistributionRandomGraph:
                 temp = temp.next          
 if __name__ == "__main__": 
 
-    vertexNumber = 5
-    edgeNumber = 8
-    runtimeCompleteStorage = []
-    runtimeCycleStorage = []
+    # vertexNumber = 5
+    # edgeNumber = 8
+    runtimeCompleteStorage = [[] for _ in range(31)]
+    runtimeUniformStorage = [[] for _ in range(31)]
+    runtimeSkewedStorage = [[] for _ in range(31)]
+    runtimeGaussStorage = [[] for _ in range(31)]
+    runtimeCycleStorage = [[] for _ in range(31)]
     vStorage = []
-    uniformRandomGraph = UniformRandomGraph(vertexNumber, edgeNumber)
-    # uniformRandomGraph.print_agraph()
-    
-    skewedRandomGraph = SkewedRandomGraph(vertexNumber,edgeNumber)
-    # skewedRandomGraph.print_agraph()
-    
-    gaussDistributionGraph = GaussianDistributionRandomGraph(vertexNumber, edgeNumber)
-    gaussDistributionGraph.print_agraph()
+    testCases = [(100, 100), (1000, 1000), (10000, 10000), (100, 150), (1000, 1500), (10000, 15000), 
+    (100, 500), (1000, 5000), (10000, 50000), (100, 1000), (1000, 10000), (10000, 100000), 
+    (100, 10), (1000, 100), (10000, 1000), (200, 200), (2000, 2000), (200, 300), 
+    (2000, 3000), (200, 20), (2000, 200), (3000, 10000), (4000,200000), (10000, 200000),
+    (10000, 2000000)]
+    print("Uniform Times: ")
+    for counterForStats in range(31):
+        for index, t in enumerate(testCases):
+            
+            vertexNumber = t[0]
+            edgeNumber = t[1]
+            timestart = time.time()
+            uniformRandomGraph = UniformRandomGraph(vertexNumber, edgeNumber)
+            uniformRandomGraph.generateUniformRandomGraph()
+            timeend = time.time()
+            print(timeend - timestart)
+            runtimeUniformStorage[counterForStats].append( timeend - timestart)
+            # uniformRandomGraph.print_agraph()
+        
+        print("Skewed Times: ")
+        for index, t in enumerate(testCases):
+            vertexNumber = t[0]
+            edgeNumber = t[1]
+            timestart = time.time()
+            skewedRandomGraph = SkewedRandomGraph(vertexNumber,edgeNumber)
+            skewedRandomGraph.generateSkewedRandomGraph()
+            timeend = time.time()
+            print(timeend - timestart)
+            runtimeSkewedStorage[counterForStats].append(timeend - timestart)
+        print("Gaussian Times: ")
+        for index, t in enumerate(testCases): 
+            vertexNumber = t[0]
+            edgeNumber = t[1]
+            # skewedRandomGraph.print_agraph()
+            timestart = time.time()
+            gaussDistributionGraph = GaussianDistributionRandomGraph(vertexNumber, edgeNumber)
+            gaussDistributionGraph.generateGaussianRandomGraph()
+            timeend = time.time()
+            print(timeend - timestart)
+            runtimeGaussStorage[counterForStats].append(timeend-timestart)
+        for index, t in enumerate(testCases):
+            
+            vertexNumber = t[0]
+            startComplete = time.time()
+            completeGraph = CompleteGraph(vertexNumber)
+            completeGraph.all_edges()
+            endComplete = time.time()
+            runtimeComplete = endComplete - startComplete
+            runtimeCompleteStorage[counterForStats].append
+            startCycle = time.time()
+            cycle = CycleGraph(vertexNumber)
+            cycle.allEdgesInCycle()
+            endCycle = time.time()
+            runtimeCycle = endCycle - startCycle
+            runtimeCycleStorage[counterForStats].append(runtimeCycle)
+
+    # print("Uniform Graph Times")
+    # print(runtimeUniformStorage)
+
+    # print("Skewed Times")
+    # print(runtimeSkewedStorage)
+
+    # print("Gaussian Times")
+    # print(runtimeGaussStorage)
+    # gaussDistributionGraph.print_agraph()
     # for V in range(5,100): # For complete graph, it looks like n^2
     #     startComplete = time.time()
     #     completeGraph = CompleteGraph(V)
@@ -339,7 +400,7 @@ if __name__ == "__main__":
         # print(runtime)
         
     # print("Output for Complete Graph with 5 Vertices:")
-    # forCompletePrintTesting = CompleteGraph(5)
+    # forCompletePrintTesting = CompleteGraph(4)
     # forCompletePrintTesting.all_edges()
     # forCompletePrintTesting.print_agraph()
     
