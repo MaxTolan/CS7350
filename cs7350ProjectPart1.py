@@ -306,21 +306,20 @@ class GaussianDistributionRandomGraph:
                 temp = temp.next          
 if __name__ == "__main__": 
 
-    # vertexNumber = 5
-    # edgeNumber = 8
-    runtimeCompleteStorage = [[] for _ in range(31)]
-    runtimeUniformStorage = [[] for _ in range(31)]
-    runtimeSkewedStorage = [[] for _ in range(31)]
-    runtimeGaussStorage = [[] for _ in range(31)]
-    runtimeCycleStorage = [[] for _ in range(31)]
+    runtimeCompleteStorage = [[] for _ in range(10)]
+    runtimeUniformStorage = [[] for _ in range(10)]
+    runtimeSkewedStorage = [[] for _ in range(10)]
+    runtimeGaussStorage = [[] for _ in range(10)]
+    runtimeCycleStorage = [[] for _ in range(10)]
     vStorage = []
     testCases = [(100, 100), (1000, 1000), (10000, 10000), (100, 150), (1000, 1500), (10000, 15000), 
     (100, 500), (1000, 5000), (10000, 50000), (100, 1000), (1000, 10000), (10000, 100000), 
     (100, 10), (1000, 100), (10000, 1000), (200, 200), (2000, 2000), (200, 300), 
     (2000, 3000), (200, 20), (2000, 200), (3000, 10000), (4000,200000), (10000, 200000),
     (10000, 2000000)]
-    print("Uniform Times: ")
-    for counterForStats in range(31):
+    
+    for counterForStats in range(10):
+        print("Uniform Times: ")
         for index, t in enumerate(testCases):
             
             vertexNumber = t[0]
